@@ -1,3 +1,4 @@
 
 secretstuff.py
 *.pyc
+.DS_Store
