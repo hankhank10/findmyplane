@@ -3,7 +3,7 @@ import time
 import random  #only need this for testing
 from SimConnect import *
 
-def request_new_plane_instance (verbose=True):
+def request_new_plane_instance ():
     print ("Attempting to connecting to server to request new plane instance...")
 
     try:
@@ -19,11 +19,9 @@ def request_new_plane_instance (verbose=True):
         return "error"
 
     received_data = (new_plane_request.json())
-    if verbose:
-        print ("Received public key", received_data['ident_public_key'])
-        print ("Received private key", received_data['ident_private_key'])
-    else:
-        print ("Received key pair")
+
+    print ("Public key: ", received_data['ident_public_key'])
+    if verbose: print ("Received private key", received_data['ident_private_key'])
     print ()
 
     return received_data
@@ -45,9 +43,21 @@ def update_location():
         'current_compass': current_compass,
         'current_altitude': current_altitude
     }
-    print ("Sending", data_to_send)
 
-    r = requests.post(website_address+"/api/update_plane_location", json=data_to_send)
+    global datapoints_sent
+    global errors_received
+
+    if verbose: print ("Sending ", data_to_send)
+    
+    try:
+        r = requests.post(website_address+"/api/update_plane_location", json=data_to_send)
+    except:
+        if verbose: print ("Error sending data")
+        errors_received = errors_received + 1
+
+    datapoints_sent = datapoints_sent + 1
+
+    if not verbose: print (str(datapoints_sent) + " datapoints sent with " + str(errors_received) + "errors received", end='\r')
 
     return "ok"
 
@@ -64,29 +74,17 @@ def print_settings():
 website_address = "http://51.195.171.71:8765"
 delay_after_failed_new_plane_request = 3
 delay_between_updates = 2
-simulation_mode = True  #testing only
+test_mode = True  #testing only
+verbose = True
 
-# Main loop
+datapoints_sent = 0
+errors_received = 0
+
 print ("")
 print ("")
 print ("Find My Plane client starting")
+print ()
 print_settings()
-
-# Request new plane instance from the server
-print()
-print("# CONNECT TO SERVER")
-
-if simulation_mode:
-    ident_public_key = "QDSDX"
-    ident_private_key = "LfN_uXQMtJCAThKY5ZkfJn_V8Dw"
-else:
-    received_plane_details = "error"
-    while received_plane_details == "error":
-        received_plane_details = request_new_plane_instance()
-        if received_plane_details == "error": time.sleep(delay_after_failed_new_plane_request)
-
-    ident_public_key = received_plane_details['ident_public_key']
-    ident_private_key = received_plane_details['ident_private_key']
 
 # Connect to sim here
 print ("Attempting to connect to MSFS 2020...")
@@ -98,6 +96,26 @@ except:
     exit()
 
 print ("... connected to MSFS 2020")
+print ()
+
+# Request new plane instance from the server
+if test_mode:
+    print("# LAUNCHING IN TEST MODE")
+    ident_public_key = "QDSDX"
+    ident_private_key = "LfN_uXQMtJCAThKY5ZkfJn_V8Dw"
+else:
+    print("# CONNECT TO SERVER")
+    received_plane_details = "error"
+    while received_plane_details == "error":
+        received_plane_details = request_new_plane_instance()
+        if received_plane_details == "error": time.sleep(delay_after_failed_new_plane_request)
+
+    ident_public_key = received_plane_details['ident_public_key']
+    ident_private_key = received_plane_details['ident_private_key']
+
+print ("")
+print ("Find your plane at: ", website_address + "/view/" + ident_public_key)
+print ("")
 
 # Report the info to the server
 run_forever = True
