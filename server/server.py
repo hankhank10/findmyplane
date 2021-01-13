@@ -1,20 +1,20 @@
 import os
-from flask import Flask, flash, request, redirect, url_for, render_template, flash, jsonify
+from flask import Flask, flash, request, redirect, url_for, render_template, flash, jsonify, Response
 import secrets
 import random
 import string
 
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
-import secretstuff
+#import secretstuff
 
 from datetime import datetime
 
 
 # Define flask variables
 app = Flask(__name__)
-app.secret_key = secretstuff.secret_key
-website_url = "http://localhost:5008/"
+#app.secret_key = secretstuff.secret_key
+#website_url = "http://localhost:5008/"
 
 # DB initialisation
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///findmyplanedb.sqlite'
@@ -37,6 +37,7 @@ class Plane(db.Model):
     ever_received_data = db.Column(db.Boolean)
 
 # API Endpoints
+
 
 @app.route('/api/create_new_plane')
 def api_new_plane():
@@ -61,21 +62,48 @@ def api_new_plane():
     db.session.add(new_plane)
     db.session.commit()
 
-    output_dictionary = {}
-    output_dictionary["ident_public_key"] = public_key
-    output_dictionary["ident_private_key"] = private_key
+    output_dictionary = {
+        "ident_public_key": public_key,
+        "ident_private_key": private_key
+    }
 
     return jsonify(output_dictionary)
 
 
-@app.route('/api/update_plane_location', methods='[POST]')
+@app.route('/api/update_plane_location', methods=['POST'])
 def api_update_location():
 
-    if request.method == 'POST':
-        return "OK"
-    
-    else:
-        return "POST method only please"
+    data_received = request.json
+
+    plane_to_update = Plane.Query.filter_by(ident_public_key = data_received['ident_public_key']).first_or_404()
+
+    plane_to_update.last_update = datetime.utcnow()
+    plane_to_update.ever_received_data = True
+    plane_to_update.current_latitude = data_received['current_latitude']
+    plane_to_update.current_longitude = data_received['current_longitude']
+    plane_to_update.current_heading = data_received['current_heading']
+
+    db.session.commit()
+
+    print ("Data received: ", data_received['ident_public_key'])
+    return "ok"
+
+
+@app.route ('/api/plane/<ident_public_key>')
+def api_view_plane_data(ident_public_key):
+    plane = Plane.query.filter_by(ident_public_key = ident_public_key).first_or_404()
+
+    output_dictionary = {
+        'ident_public_key': plane.ident_public_key,
+        'current_latitude': plane.current_latitude,
+        'current_longitude': plane.current_longitude,
+        'current_heading': plane.current_heading,
+        'last_update': plane.last_update,
+        'ever_received_data': plane.ever_received_data
+    }
+
+    return jsonify(output_dictionary)
+
 
 
 # The main event...
