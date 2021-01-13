@@ -75,7 +75,7 @@ def api_update_location():
 
     data_received = request.json
 
-    plane_to_update = Plane.Query.filter_by(ident_public_key = data_received['ident_public_key']).first_or_404()
+    plane_to_update = Plane.query.filter_by(ident_public_key = data_received['ident_public_key'], ident_private_key = data_received['ident_private_key']).first_or_404()
 
     plane_to_update.last_update = datetime.utcnow()
     plane_to_update.ever_received_data = True

@@ -1,5 +1,6 @@
 import requests
 import time
+import random  #only need this for testing
 
 
 def request_new_plane_instance (verbose=True):
@@ -33,9 +34,9 @@ def update_location():
     data_to_send = {
         'ident_public_key': ident_public_key,
         'ident_private_key': ident_private_key,
-        'current_latitude': 100,
-        'current_longitude': 150,
-        'current_heading': 10
+        'current_latitude': random.randint(-100,100),
+        'current_longitude': random.randint(-100,100),
+        'current_heading': random.randint(1,360)
     }
     print ("Sending", data_to_send)
 
