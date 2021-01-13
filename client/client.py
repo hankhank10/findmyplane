@@ -103,14 +103,13 @@ datapoints_sent = 0
 errors_received = 0
 
 print_art()
-print ("")
-print ("")
-print ("Client starting")
-print ("Version ", version)
+print ("Client")
+print ("Version", version)
 print ()
 print_settings()
 
 # Connect to sim here
+print ("# CONNECTING TO SIMULATOR")
 print ("Attempting to connect to MSFS 2020...")
 try:
     sm = SimConnect()
@@ -124,7 +123,7 @@ print ()
 
 # Request new plane instance from the server
 if test_mode:
-    print("# LAUNCHING IN TEST MODE")
+    print("# CONNECTING TO SERVER IN TEST MODE")
     ident_public_key = "QDSDX"
     ident_private_key = "LfN_uXQMtJCAThKY5ZkfJn_V8Dw"
 else:
@@ -137,8 +136,8 @@ else:
     ident_public_key = received_plane_details['ident_public_key']
     ident_private_key = received_plane_details['ident_private_key']
 
-print ("Connected.")
-print ("Find your plane at: ", website_address + "/view/" + ident_public_key)
+print ("Connected to server at", website_address)
+print ("Find your plane at:", website_address + "/view/" + ident_public_key)
 print ("")
 
 # Report the info to the server
