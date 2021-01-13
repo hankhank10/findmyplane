@@ -75,7 +75,7 @@ website_address = "http://51.195.171.71:8765"
 delay_after_failed_new_plane_request = 3
 delay_between_updates = 2
 test_mode = True  #testing only
-verbose = True
+verbose = False
 
 datapoints_sent = 0
 errors_received = 0
