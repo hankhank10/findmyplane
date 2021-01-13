@@ -1,7 +1,7 @@
 import requests
 import time
 import random  #only need this for testing
-from SimConnect import *
+
 
 def request_new_plane_instance (verbose=True):
     print ("Attempting to connecting to server to request new plane instance...")
@@ -31,19 +31,19 @@ def request_new_plane_instance (verbose=True):
 
 def update_location():
 
-    # Get data from sim
-    current_latitude = aq.get("PLANE_LATITUDE")
-    current_longitude = aq.get("PLANE_LONGITUDE")
-    current_altitude = aq.get("ALTITUDE")
-    current_compass = round(aq.get("MAGNETIC_COMPASS"))
+    global current_latitude
+    global current_longitude
+
+    current_latitude = current_latitude + 0.01
+    current_longitude = current_longitude + 0.01
 
     data_to_send = {
         'ident_public_key': ident_public_key,
         'ident_private_key': ident_private_key,
         'current_latitude': current_latitude,
         'current_longitude': current_longitude,
-        'current_compass': current_compass,
-        'current_altitude': current_altitude
+        'current_compass': random.randint(1,360),
+        'current_altitude': random.randint(1000,27000)
     }
     print ("Sending", data_to_send)
 
@@ -61,10 +61,17 @@ def print_settings():
     print ()
 
 # Settings
+
+
 website_address = "http://localhost:5008"
 delay_after_failed_new_plane_request = 3
 delay_between_updates = 2
-simulation_mode = True  #testing only
+
+# Testing purposes only
+simulation_mode = True
+current_latitude = 51.470
+current_longitude = 0.4543
+
 
 # Main loop
 print ("")
@@ -72,7 +79,9 @@ print ("")
 print ("Find My Plane client starting")
 print_settings()
 
+
 # Request new plane instance from the server
+
 print()
 print("# CONNECT TO SERVER")
 
@@ -89,10 +98,6 @@ else:
     ident_private_key = received_plane_details['ident_private_key']
 
 # Connect to sim here
-print ("Attempting to connect to MSFS 2020...")
-sm = SimConnect()
-aq = AircraftRequests(sm, _time=10)
-print ("... connected to MSFS 2020")
 
 # Report the info to the server
 run_forever = True

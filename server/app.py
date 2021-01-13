@@ -32,7 +32,8 @@ class Plane(db.Model):
     ident_private_key = db.Column(db.String)
     current_latitude = db.Column(db.Float)
     current_longitude = db.Column(db.Float)
-    current_heading = db.Column(db.Integer)
+    current_compass = db.Column(db.Integer)
+    current_altitude = db.Column(db.Integer)
     last_update = db.Column(db.DateTime)
     ever_received_data = db.Column(db.Boolean)
 
@@ -54,7 +55,8 @@ def api_new_plane():
         ident_private_key = private_key,
         current_latitude = 0,
         current_longitude = 0,
-        current_heading = 0,
+        current_compass = 0,
+        current_altitude = 0,
         last_update = datetime.utcnow(),
         ever_received_data = False
     )
@@ -81,7 +83,8 @@ def api_update_location():
     plane_to_update.ever_received_data = True
     plane_to_update.current_latitude = data_received['current_latitude']
     plane_to_update.current_longitude = data_received['current_longitude']
-    plane_to_update.current_heading = data_received['current_heading']
+    plane_to_update.current_compass = data_received['current_compass']
+    plane_to_update.current_altitude = data_received['current_altitude']
 
     db.session.commit()
 
@@ -97,7 +100,8 @@ def api_view_plane_data(ident_public_key):
         'ident_public_key': plane.ident_public_key,
         'current_latitude': plane.current_latitude,
         'current_longitude': plane.current_longitude,
-        'current_heading': plane.current_heading,
+        'current_compass': plane.current_compass,
+        'current_altitude': plane.current_altitude,
         'last_update': plane.last_update,
         'ever_received_data': plane.ever_received_data
     }
@@ -111,6 +115,14 @@ def api_view_plane_data(ident_public_key):
 @app.route('/')
 def index():
     return "Index"
+
+
+@app.route('/view/<ident_public_key>')
+def show_map(ident_public_key):
+
+    plane = Plane.query.filter_by(ident_public_key = ident_public_key).first_or_404()
+
+    return render_template('map.html', ident_public_key = ident_public_key)
 
 
 if __name__ == '__main__':
