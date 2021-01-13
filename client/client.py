@@ -141,12 +141,11 @@ print ("")
 
 # Report the info to the server
 run_forever = True
-while run_forever:
-    update_location()
-    time.sleep(delay_between_updates)
+try:
+    while run_forever:
+        update_location()
+        time.sleep(delay_between_updates)
+except KeyboardInterrupt:
+    quit()
 
-    try:
-        raise KeyboardInterrupt
-    except KeyboardInterrupt:
-        print("Keyboard interrupt exception caught")
-        quit()
+
