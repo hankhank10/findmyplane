@@ -61,7 +61,7 @@ def print_settings():
     print ()
 
 # Settings
-website_address = "http://localhost:5008"
+website_address = "http://51.195.171.71:8765"
 delay_after_failed_new_plane_request = 3
 delay_between_updates = 2
 simulation_mode = True  #testing only

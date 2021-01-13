@@ -126,4 +126,4 @@ def show_map(ident_public_key):
 
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5008, debug=True)
+    app.run(host='0.0.0.0', port=8765, debug=True)
