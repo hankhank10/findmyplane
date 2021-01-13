@@ -90,8 +90,13 @@ else:
 
 # Connect to sim here
 print ("Attempting to connect to MSFS 2020...")
-sm = SimConnect()
-aq = AircraftRequests(sm, _time=10)
+try:
+    sm = SimConnect()
+    aq = AircraftRequests(sm, _time=10)
+except:
+    print ("... no sim found")
+    exit()
+
 print ("... connected to MSFS 2020")
 
 # Report the info to the server
