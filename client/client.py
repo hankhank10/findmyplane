@@ -42,7 +42,7 @@ def update_location():
         errors_received = errors_received + 1
         error_this_time = True
 
-    if error_this_time = False:
+    if not error_this_time:
         data_to_send = {
             'ident_public_key': ident_public_key,
             'ident_private_key': ident_private_key,
