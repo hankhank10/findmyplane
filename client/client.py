@@ -30,34 +30,42 @@ def request_new_plane_instance ():
 def update_location():
 
     # Get data from sim
-    current_latitude = aq.get("PLANE_LATITUDE")
-    current_longitude = aq.get("PLANE_LONGITUDE")
-    current_altitude = aq.get("ALTITUDE")
-    current_compass = round(aq.get("MAGNETIC_COMPASS"))
+    error_this_time = False
 
-    data_to_send = {
-        'ident_public_key': ident_public_key,
-        'ident_private_key': ident_private_key,
-        'current_latitude': current_latitude,
-        'current_longitude': current_longitude,
-        'current_compass': current_compass,
-        'current_altitude': current_altitude
-    }
-
-    global datapoints_sent
-    global errors_received
-
-    if verbose: print ("Sending ", data_to_send)
-    
     try:
-        r = requests.post(website_address+"/api/update_plane_location", json=data_to_send)
+        current_latitude = aq.get("PLANE_LATITUDE")
+        current_longitude = aq.get("PLANE_LONGITUDE")
+        current_altitude = aq.get("ALTITUDE")
+        current_compass = aq.get("MAGNETIC_COMPASS")
     except:
-        if verbose: print ("Error sending data")
+        if verbose: print ("Error getting sim data")
         errors_received = errors_received + 1
+        error_this_time = True
 
-    datapoints_sent = datapoints_sent + 1
+    if error_this_time = False:
+        data_to_send = {
+            'ident_public_key': ident_public_key,
+            'ident_private_key': ident_private_key,
+            'current_latitude': current_latitude,
+            'current_longitude': current_longitude,
+            'current_compass': current_compass,
+            'current_altitude': current_altitude
+        }
 
-    if not verbose: print (str(datapoints_sent) + " datapoints sent with " + str(errors_received) + "errors received", end='\r')
+        global datapoints_sent
+        global errors_received
+
+        if verbose: print ("Sending ", data_to_send)
+        
+        try:
+            r = requests.post(website_address+"/api/update_plane_location", json=data_to_send)
+        except:
+            if verbose: print ("Error sending data")
+            errors_received = errors_received + 1
+
+        datapoints_sent = datapoints_sent + 1
+
+    if not verbose: print (str(datapoints_sent) + " datapoints sent with " + str(errors_received) + " errors received", end='\r')
 
     return "ok"
 
@@ -66,8 +74,8 @@ def print_settings():
     print ()
     print ("# SETTINGS:")
     print ("Server address is", website_address)
-    print ("Delay after failed new plane request =", str(delay_after_failed_new_plane_request))
-    print ("Delay between updates =", str(delay_between_updates))
+    print ("Delay after failed new plane request is", str(delay_after_failed_new_plane_request), "seconds")
+    print ("Delay between updates is", str(delay_between_updates), "seconds")
     print ()
 
 # Settings
