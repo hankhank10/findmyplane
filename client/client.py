@@ -16,7 +16,6 @@ def print_art():
     print()
 
 def print_settings():
-    print ()
     print ("# SETTINGS:")
     print ("Server address is", website_address)
     print ("Delay after failed new plane request is", str(delay_after_failed_new_plane_request), "seconds")
@@ -103,7 +102,7 @@ datapoints_sent = 0
 errors_received = 0
 
 print_art()
-print ("Client")
+print ("Windows client")
 print ("Version", version)
 print ()
 print_settings()
@@ -145,3 +144,9 @@ run_forever = True
 while run_forever:
     update_location()
     time.sleep(delay_between_updates)
+
+    try:
+        raise KeyboardInterrupt
+    except KeyboardInterrupt:
+        print("Keyboard interrupt exception caught")
+        quit()
