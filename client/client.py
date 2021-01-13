@@ -93,7 +93,7 @@ def update_location():
 # Settings
 website_address = "http://51.195.171.71:8765"
 delay_after_failed_new_plane_request = 3
-delay_between_updates = 2
+delay_between_updates = 1
 test_mode = True  #testing only
 verbose = False
 version = "Alpha 0.1"
@@ -137,7 +137,8 @@ else:
 
 print ("Connected to server at", website_address)
 print ("Find your plane at:", website_address + "/view/" + ident_public_key)
-print ("")
+print ("Press CTRL-C to exit")
+print ()
 
 # Report the info to the server
 run_forever = True
