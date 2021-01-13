@@ -3,6 +3,26 @@ import time
 import random  #only need this for testing
 from SimConnect import *
 
+def print_art():
+    print()
+    print(" ______ _           _ __  __       _____  _                    _ _           ")
+    print("|  ____(_)         | |  \/  |     |  __ \| |                  | (_)          ")
+    print("| |__   _ _ __   __| | \  / |_   _| |__) | | __ _ _ __   ___  | |___   _____ ")
+    print("|  __| | | '_ \ / _` | |\/| | | | |  ___/| |/ _` | '_ \ / _ \ | | \ \ / / _ \ ")
+    print("| |    | | | | | (_| | |  | | |_| | |    | | (_| | | | |  __/_| | |\ V /  __/")
+    print("|_|    |_|_| |_|\__,_|_|  |_|\__, |_|    |_|\__,_|_| |_|\___(_)_|_| \_/ \___|")
+    print("                              __/ |                                          ")
+    print("                             |___/                                           ")
+    print()
+
+def print_settings():
+    print ()
+    print ("# SETTINGS:")
+    print ("Server address is", website_address)
+    print ("Delay after failed new plane request is", str(delay_after_failed_new_plane_request), "seconds")
+    print ("Delay between updates is", str(delay_between_updates), "seconds")
+    print ()
+
 def request_new_plane_instance ():
     print ("Attempting to connecting to server to request new plane instance...")
 
@@ -29,9 +49,11 @@ def request_new_plane_instance ():
 
 def update_location():
 
-    # Get data from sim
     error_this_time = False
+    global datapoints_sent
+    global errors_received
 
+    # Get data from sim
     try:
         current_latitude = aq.get("PLANE_LATITUDE")
         current_longitude = aq.get("PLANE_LONGITUDE")
@@ -52,9 +74,6 @@ def update_location():
             'current_altitude': current_altitude
         }
 
-        global datapoints_sent
-        global errors_received
-
         if verbose: print ("Sending ", data_to_send)
         
         try:
@@ -70,13 +89,7 @@ def update_location():
     return "ok"
 
 
-def print_settings():
-    print ()
-    print ("# SETTINGS:")
-    print ("Server address is", website_address)
-    print ("Delay after failed new plane request is", str(delay_after_failed_new_plane_request), "seconds")
-    print ("Delay between updates is", str(delay_between_updates), "seconds")
-    print ()
+
 
 # Settings
 website_address = "http://51.195.171.71:8765"
@@ -84,13 +97,16 @@ delay_after_failed_new_plane_request = 3
 delay_between_updates = 2
 test_mode = True  #testing only
 verbose = False
+version = "Alpha 0.1"
 
 datapoints_sent = 0
 errors_received = 0
 
+print_art()
 print ("")
 print ("")
-print ("Find My Plane client starting")
+print ("Client starting")
+print ("Version ", version)
 print ()
 print_settings()
 
@@ -112,7 +128,7 @@ if test_mode:
     ident_public_key = "QDSDX"
     ident_private_key = "LfN_uXQMtJCAThKY5ZkfJn_V8Dw"
 else:
-    print("# CONNECT TO SERVER")
+    print("# CONNECTING TO SERVER")
     received_plane_details = "error"
     while received_plane_details == "error":
         received_plane_details = request_new_plane_instance()
@@ -121,7 +137,7 @@ else:
     ident_public_key = received_plane_details['ident_public_key']
     ident_private_key = received_plane_details['ident_private_key']
 
-print ("")
+print ("Connected.")
 print ("Find your plane at: ", website_address + "/view/" + ident_public_key)
 print ("")
 
